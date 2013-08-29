@@ -32,6 +32,7 @@ stdenv.mkDerivation rec {
     ''
       # Prefer ntfs-3g over the ntfs driver in the kernel.
       ln -sv mount.ntfs-3g $out/sbin/mount.ntfs
+      ln -s $out/bin/ntfsfix $out/bin/fsck.ntfs
     '';
 
   meta = {

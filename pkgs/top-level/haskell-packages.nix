@@ -668,6 +668,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
   caseInsensitive_1_0_0_2 = callPackage ../development/libraries/haskell/case-insensitive/1.0.0.2.nix {};
   caseInsensitive = self.caseInsensitive_1_0_0_2;
 
+  CCA = callPackage ../development/libraries/haskell/CCA {};
+
   cautiousFile = callPackage ../development/libraries/haskell/cautious-file {};
 
   cereal = callPackage ../development/libraries/haskell/cereal {};
@@ -921,6 +923,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
 
   either = callPackage ../development/libraries/haskell/either {};
 
+  euterpea = callPackage ../development/libraries/haskell/euterpea {};
+  
   exceptionMtl = callPackage ../development/libraries/haskell/exception-mtl {};
 
   exceptionTransformers = callPackage ../development/libraries/haskell/exception-transformers {};
@@ -1119,6 +1123,10 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
   haskellSrcMeta = callPackage ../development/libraries/haskell/haskell-src-meta {};
 
   hastache = callPackage ../development/libraries/haskell/hastache {};
+
+  HCodecs = callPackage ../development/libraries/haskell/HCodecs {};
+
+  heap = callPackage ../development/libraries/haskell/heap {};
 
   hexpat = callPackage ../development/libraries/haskell/hexpat {};
 
@@ -1370,6 +1378,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
 
   markdownUnlit = callPackage ../development/libraries/haskell/markdown-unlit {};
 
+  markov-chain = callPackage ../development/libraries/haskell/markov-chain {};
+
   mathFunctions = callPackage ../development/libraries/haskell/math-functions {};
 
   mainlandPretty = callPackage ../development/libraries/haskell/mainland-pretty {};
@@ -1407,6 +1417,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
   monadControl = callPackage ../development/libraries/haskell/monad-control {};
 
   monadcryptorandom = callPackage ../development/libraries/haskell/monadcryptorandom {};
+
+  monadIO = callPackage ../development/libraries/haskell/monadIO {};
 
   monadLoops = callPackage ../development/libraries/haskell/monad-loops {};
 
@@ -1614,6 +1626,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
 
   pop3client = callPackage ../development/libraries/haskell/pop3-client {};
 
+  # PortMidi = callPackage ../development/libraries/haskell/PortMidi {};
+
   postgresqlLibpq = callPackage ../development/libraries/haskell/postgresql-libpq {
     inherit (pkgs) postgresql;
   };
@@ -1627,6 +1641,8 @@ let result = let callPackage = x : y : modifyPrio (newScope result.final x y);
   prettyShow = self.prettyShow_1_6_1;
 
   punycode = callPackage ../development/libraries/haskell/punycode {};
+
+  pure-fft = callPackage ../development/libraries/haskell/pure-fft {};
 
   primitive_0_5_0_1 = callPackage ../development/libraries/haskell/primitive/0.5.0.1.nix   {};
   primitive = self.primitive_0_5_0_1;

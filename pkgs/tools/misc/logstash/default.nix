@@ -1,12 +1,12 @@
 { stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  version = "1.5.3";
+  version = "2.3.2";
   name = "logstash-${version}";
 
   src = fetchurl {
     url = "https://download.elasticsearch.org/logstash/logstash/logstash-${version}.tar.gz";
-    sha256 = "1an476k4q2shdxvhcx4fzbrcpk6isjrrvzlb6ivxfqg5fih3cg7b";
+    sha256 = "1h9qvm48vx938ymscw5qp9cmk76z15lfydk7723q0g17z91xkjdk";
   };
 
   dontBuild         = true;
@@ -17,7 +17,8 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out
     cp -r {Gemfile*,vendor,lib,bin} $out
-    mv $out/bin/plugin $out/bin/logstash-plugin
+    rm $out/bin/plugin
+    chmod -x $out/bin/logstash.lib.sh
   '';
 
   meta = with stdenv.lib; {

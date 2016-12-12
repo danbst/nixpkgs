@@ -15,25 +15,15 @@ let
     {
         url=$1
         echo "Fetching $url ..."
-        (cd ${cfg.databaseDir} && ${pkgs.curl.bin}/bin/curl --silent --fail -O "$url")
+        (cd ${cfg.databaseDir} && ${pkgs.curl.bin}/bin/curl --silent -LO "$url")
     }
-
     fetchDatabases()
     {
         base_url="https://geolite.maxmind.com/download/geoip/database"
-        dbs="
-        GeoLiteCountry/GeoIP.dat.gz
-        GeoIPv6.dat.gz
-        GeoLiteCity.dat.xz
-        GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
-        asnum/GeoIPASNum.dat.gz
-        asnum/GeoIPASNumv6.dat.gz
-        "
-        for db in $dbs; do
+        for db in ${lib.concatStringsSep " " cfg.databases}; do
             fetchDb "$base_url/$db"
         done
     }
-
     unpackDatabases()
     {
         (cd ${cfg.databaseDir} &&
@@ -47,7 +37,6 @@ let
             done
         )
     }
-
     echo "Updating GeoIP databases in ${cfg.databaseDir} ..."
     fetchDatabases
     unpackDatabases
@@ -74,7 +63,6 @@ in
         default = "weekly";
         description = ''
           Update the GeoIP databases at this time / interval.
-
           The format is described in
           <citerefentry><refentrytitle>systemd.time</refentrytitle>
           <manvolnum>7</manvolnum></citerefentry>.
@@ -85,6 +73,21 @@ in
         default = "/var/lib/geoip-databases";
         description = ''
           Directory that will contain GeoIP databases.
+        '';
+      };
+
+      databases = mkOption {
+        default = [
+          "GeoLite2-Country.mmdb.gz"
+          "GeoLiteCountry/GeoIP.dat.gz"
+          "GeoIPv6.dat.gz"
+          "GeoLiteCity.dat.xz"
+          "GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz"
+          "asnum/GeoIPASNum.dat.gz"
+          "asnum/GeoIPASNumv6.dat.gz"
+        ];
+        description = ''
+          Which GeoIP databases to update.
         '';
       };
 
@@ -111,6 +114,17 @@ in
       '';
       serviceConfig = {
         ExecStart = "${updaterProg}/bin/geoip-updater-script";
+      };
+    };
+
+    systemd.services.geoip-updater-setup = {
+      description = "GeoIP Updater Service Setup";
+      wants = [ "geoip-updater.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.coreutils}/bin/true";
       };
     };
 

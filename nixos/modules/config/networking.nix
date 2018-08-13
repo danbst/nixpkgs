@@ -239,6 +239,8 @@ in
               resolv_conf_options='${concatStringsSep " " resolvconfOptions}'
             '' + optionalString (hasLocalResolver || cfg.nameservers != []) ''
               name_servers='${lib.concatStringsSep " " (lib.optional hasLocalResolver "127.0.0.1" ++ cfg.nameservers)}'
+            '' + optionalString (cfg.search != []) ''
+              search_domains='${lib.concatStringsSep " " (cfg.search)}'
             '' + optionalString dnsmasqResolve ''
               dnsmasq_conf=/etc/dnsmasq-conf.conf
               dnsmasq_resolv=/etc/dnsmasq-resolv.conf

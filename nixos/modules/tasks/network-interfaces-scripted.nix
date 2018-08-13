@@ -102,16 +102,10 @@ let
 
             script =
               ''
-                # Set the static DNS configuration, if given.
-                ${pkgs.openresolv}/sbin/resolvconf -m 1 -a static <<EOF
-                ${optionalString (cfg.nameservers != [] && cfg.domain != null) ''
-                  domain ${cfg.domain}
+                ${lib.optionalString (!config.environment.etc?"resolve.conf") ''    
+                    # Set the static DNS configuration, if given.
+                    ${pkgs.openresolv}/sbin/resolvconf -u
                 ''}
-                ${optionalString (cfg.search != []) ("search " + concatStringsSep " " cfg.search)}
-                ${flip concatMapStrings cfg.nameservers (ns: ''
-                  nameserver ${ns}
-                '')}
-                EOF
 
                 # Set the default gateway.
                 ${optionalString (cfg.defaultGateway != null && cfg.defaultGateway.address != "") ''

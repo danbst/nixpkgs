@@ -104,7 +104,11 @@ let
               ''
                 ${lib.optionalString (!config.environment.etc?"resolve.conf") ''    
                     # Set the static DNS configuration, if given.
-                    ${pkgs.openresolv}/sbin/resolvconf -u
+                    ${pkgs.openresolv}/sbin/resolvconf -u -m 1 -a static <<EOF
+                      ${optionalString (cfg.domain != null)
+                         "domain ${cfg.domain}"
+                      }
+                    EOF
                 ''}
 
                 # Set the default gateway.

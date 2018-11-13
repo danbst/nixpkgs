@@ -24,7 +24,20 @@ in {
     extraArgs = "--owner=0";
 
     # Add init script to image
-    storeContents = pkgs2storeContents [
+    storeContents = [
+      # Add init script to image
+      { object = config.system.build.toplevel + "/init";
+        # use /sbin/init instead of /init as it's the default location of lxc and systemd-nspawn
+        symlink = "/sbin/init";
+      }
+      # # Add /etc/os-release from nix store upfront, so that it is there prior first boot.
+      # # for docker, this is only informative and not required, but for lxc, which also
+      # # imports this code, it is required when started with systemd-nspawn.
+      # { object = config.environment.etc."os-release".source;
+      #   symlink = "/etc/os-release";
+      # }
+
+    ] ++ pkgs2storeContents [
       config.system.build.toplevel
       pkgs.stdenv
     ];
@@ -34,6 +47,9 @@ in {
   };
 
   boot.isContainer = true;
+  # TODO: /sbin/init handling could probably done through this,
+  # but this is not enough for /sbin/init to land in the image
+  # boot.loader.initScript.enable = true;
   boot.postBootCommands =
     ''
       # After booting, register the contents of the Nix store in the Nix
@@ -49,6 +65,6 @@ in {
 
   # Install new init script
   system.activationScripts.installInitScript = ''
-    ln -fs $systemConfig/init /init
+    ln -fs --relative $systemConfig/init /sbin/init
   '';
 }

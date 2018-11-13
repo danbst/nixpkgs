@@ -423,6 +423,14 @@
       use <literal>nixos-rebuild boot; reboot</literal>.
      </para>
    </listitem>
+   <listitem>
+    <para>
+     Symlinks in <filename>/etc</filename> are now relative instead of absolute,
+     so that the links can be followed if the NixOS installation is not mounted as filesystem root.
+     In particular, this makes <filename>/etc/os-release</filename> adhere to
+     <link xlink:href="https://www.freedesktop.org/software/systemd/man/os-release.html">the standard</link>.
+    </para>
+   </listitem>
   </itemizedlist>
  </section>
 </section>

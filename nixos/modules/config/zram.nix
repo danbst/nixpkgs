@@ -13,6 +13,20 @@ let
   devices = map (nr: "zram${toString nr}") (range 0 (devicesCount - 1));
 
   modprobe = "${pkgs.kmod}/bin/modprobe";
+  bc = "${pkgs.bc}/bin/bc";
+
+  warnings =
+  assert cfg.swapDevices != null -> cfg.numDevices >= cfg.swapDevices;
+  flatten [
+    (optional (cfg.numDevices > 1 && cfg.swapDevices == null) ''
+      Using several small zram devices as swap is no better than using one large.
+      Set either zramSwap.numDevices = 1 or explicitly set zramSwap.swapDevices.
+
+      Previously multiple zram devices were used to enable multithreaded
+      compression. Linux supports multithreaded compression for 1 device
+      since 3.15. See https://lkml.org/lkml/2014/2/28/404 for details.
+    '')
+  ];
 
   warnings =
   assert cfg.swapDevices != null -> cfg.numDevices >= cfg.swapDevices;

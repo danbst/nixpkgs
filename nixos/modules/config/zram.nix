@@ -13,7 +13,6 @@ let
   devices = map (nr: "zram${toString nr}") (range 0 (devicesCount - 1));
 
   modprobe = "${pkgs.kmod}/bin/modprobe";
-  bc = "${pkgs.bc}/bin/bc";
 
   warnings =
   assert cfg.swapDevices != null -> cfg.numDevices >= cfg.swapDevices;

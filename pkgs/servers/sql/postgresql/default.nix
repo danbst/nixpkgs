@@ -25,7 +25,7 @@ let
       inherit sha256;
     };
 
-    outputs = [ "out" "lib" "doc" "man" ];
+    outputs = [ "out" "lib" "doc" "man" "client" ];
     setOutputFlags = false; # $out retains configureFlags :-/
 
     buildInputs =
@@ -79,6 +79,30 @@ let
         moveToOutput "lib/*.a" "$out"
         moveToOutput "lib/libecpg*" "$out"
 
+        # https://www.postgresql.org/docs/11/reference-client.html
+        for tool in \
+          clusterdb \
+          createdb \
+          createuser \
+          dropdb \
+          dropuser \
+          ecpg \
+          pg_basebackup \
+          pgbench \
+          pg_config \
+          pg_dump \
+          pg_dumpall \
+          pg_isready \
+          pg_receivewal \
+          pg_recvlogical \
+          pg_restore \
+          psql \
+          reindexdb \
+          vacuumdb
+        do
+          moveToOutput "bin/$tool" "$client" || echo $tool is unavailable for PG${version}
+        done
+
         # Prevent a retained dependency on gcc-wrapper.
         substituteInPlace "$out/lib/pgxs/src/Makefile.global" --replace ${stdenv.cc}/bin/ld ld
 
@@ -122,6 +146,7 @@ let
 
     meta = with lib; {
       homepage    = https://www.postgresql.org;
+      outputsToInstall = [ "out" "client" ];
       description = "A powerful, open source object-relational database system";
       license     = licenses.postgresql;
       maintainers = with maintainers; [ ocharles thoughtpolice danbst ];

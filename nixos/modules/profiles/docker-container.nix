@@ -25,17 +25,16 @@ in {
 
     # Add init script to image
     storeContents = [
-      # Add init script to image
+      # use /sbin/init instead of /init as it's the default location of lxc and systemd-nspawn
       { object = config.system.build.toplevel + "/init";
-        # use /sbin/init instead of /init as it's the default location of lxc and systemd-nspawn
         symlink = "/sbin/init";
       }
-      # # Add /etc/os-release from nix store upfront, so that it is there prior first boot.
+      # # Add /etc from nix store upfront, so that it is there prior first boot.
       # # for docker, this is only informative and not required, but for lxc, which also
       # # imports this code, it is required when started with systemd-nspawn.
-      # { object = config.environment.etc."os-release".source;
-      #   symlink = "/etc/os-release";
-      # }
+      { object = config.system.build.etc + "/etc";
+        symlink = "/etc";
+      }
 
     ] ++ pkgs2storeContents [
       config.system.build.toplevel

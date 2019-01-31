@@ -124,12 +124,12 @@ in rec {
         if [ -L $fn ]; then
           target="$(readlink "$fn")"
           if [ ''${target:0:3} = ../ ]; then
-            ln -s "$(readlink -f "$fn")" $out/
+            ln --relative -s "$(readlink -f "$fn")" $out/
           else
             cp -pd $fn $out/
           fi
         else
-          ln -s $fn $out/
+          ln --relative -s $fn $out/
         fi
       done
 
@@ -156,7 +156,7 @@ in rec {
               mkdir -p "$targetDir"
               ${lndir} "$fn" "$targetDir"
             else
-              ln -s $fn $out/
+              ln --relative -s $fn $out/
             fi
           fi
         done
@@ -170,20 +170,20 @@ in rec {
         fn=$(basename $i/*)
         if [ -e $out/$fn ]; then
           if [ "$(readlink -f $i/$fn)" = /dev/null ]; then
-            ln -sfn /dev/null $out/$fn
+            ln --relative -sfn /dev/null $out/$fn
           else
             mkdir -p $out/$fn.d
-            ln -s $i/$fn $out/$fn.d/overrides.conf
+            ln --relative -s $i/$fn $out/$fn.d/overrides.conf
           fi
        else
-          ln -fs $i/$fn $out/
+          ln --relative -fs $i/$fn $out/
         fi
       done
 
       # Create service aliases from aliases option.
       ${concatStrings (mapAttrsToList (name: unit:
           concatMapStrings (name2: ''
-            ln -sfn '${name}' $out/'${name2}'
+            ln --relative -sfn '${name}' $out/'${name2}'
           '') unit.aliases) units)}
 
       # Create .wants and .requires symlinks from the wantedBy and
@@ -191,25 +191,25 @@ in rec {
       ${concatStrings (mapAttrsToList (name: unit:
           concatMapStrings (name2: ''
             mkdir -p $out/'${name2}.wants'
-            ln -sfn '../${name}' $out/'${name2}.wants'/
+            ln --relative -sfn '../${name}' $out/'${name2}.wants'/
           '') unit.wantedBy) units)}
 
       ${concatStrings (mapAttrsToList (name: unit:
           concatMapStrings (name2: ''
             mkdir -p $out/'${name2}.requires'
-            ln -sfn '../${name}' $out/'${name2}.requires'/
+            ln --relative -sfn '../${name}' $out/'${name2}.requires'/
           '') unit.requiredBy) units)}
 
       ${optionalString (type == "system") ''
         # Stupid misc. symlinks.
-        ln -s ${cfg.defaultUnit} $out/default.target
-        ln -s ${cfg.ctrlAltDelUnit} $out/ctrl-alt-del.target
-        ln -s rescue.target $out/kbrequest.target
+        ln --relative -s ${cfg.defaultUnit} $out/default.target
+        ln --relative -s ${cfg.ctrlAltDelUnit} $out/ctrl-alt-del.target
+        ln --relative -s rescue.target $out/kbrequest.target
 
         mkdir -p $out/getty.target.wants/
-        ln -s ../autovt@tty1.service $out/getty.target.wants/
+        ln --relative -s ../autovt@tty1.service $out/getty.target.wants/
 
-        ln -s ../local-fs.target ../remote-fs.target \
+        ln --relative -s ../local-fs.target ../remote-fs.target \
         ../nss-lookup.target ../nss-user-lookup.target ../swap.target \
         $out/multi-user.target.wants/
       ''}

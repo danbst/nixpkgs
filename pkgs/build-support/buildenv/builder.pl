@@ -199,9 +199,12 @@ foreach my $relName (sort keys %symlinks) {
         #print "creating directory $relName\n";
         mkpath $abs or die "cannot create directory `$abs': $!";
     } else {
-        #print "creating symlink $relName to $target\n";
-        symlink $target, $abs ||
+        my $rel = File::Spec->abs2rel($target, dirname $abs);
+        symlink $rel, $abs ||
             die "error creating link `$abs': $!";
+        # #print "creating symlink $relName to $target\n";
+        # symlink $target, $abs ||
+        #     die "error creating link `$abs': $!";
         $nrLinks++;
     }
 }

@@ -23,14 +23,14 @@ let
     else throw "Only x86_64 Linux and Darwin are supported.";
 
   languageServerSha256 = {
-    "linux-x64" = "0j9251f8dfccmg0x9gzg1cai4k5zd0alcfpb0443gs4jqakl0lr2";
-    "osx-x64" = "070qwwl08fa24rsnln4i5x9mfriqaw920l6v2j8d1r0zylxnyjsa";
+    "linux-x64" = "04kgajsajsm33n9qnhhi472bgm7v9kqwpzgjjyx60kd9rb72np11";
+    "osx-x64" = "1msnss8p3xfxq3pf0g9p8xjb72vilkfiix7h3fl48wzqdynigqg2";
   }."${arch}";
 
   # version is languageServerVersion in the package.json
   languageServer = extractNuGet rec {
     name = "Python-Language-Server";
-    version = "0.3.40";
+    version = "0.3.43";
 
     src = fetchurl {
       url = "https://pvsc.azureedge.net/python-language-server-stable/${name}-${arch}.${version}.nupkg";
@@ -41,8 +41,8 @@ in vscode-utils.buildVscodeMarketplaceExtension {
   mktplcRef = {
     name = "python";
     publisher = "ms-python";
-    version = "2019.6.24221";
-    sha256 = "1l82y3mbplzipcij5a0wqlykypik0sbba4hwr2r4vwiwb6kxscmx";
+    version = "2019.8.29288";
+    sha256 = "1rhhk6sm86vifnwq1a86c7ynw6a6waidc52rk5404li808sb8qyx";
   };
 
   buildInputs = [

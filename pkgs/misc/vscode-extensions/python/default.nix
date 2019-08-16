@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, vscode-utils, extractNuGet
+{ lib, stdenv, fetchurl, vscode-utils, extractNuGet, callPackage
 , icu, curl, openssl, lttng-ust, autoPatchelfHook
 , pythonUseFixed ? false, python  # When `true`, the python default setting will be fixed to specified.
                                   # Use version from `PATH` for default setting otherwise.
@@ -22,21 +22,8 @@ let
     else if stdenv.isDarwin then "osx-x64"
     else throw "Only x86_64 Linux and Darwin are supported.";
 
-  languageServerSha256 = {
-    "linux-x64" = "04kgajsajsm33n9qnhhi472bgm7v9kqwpzgjjyx60kd9rb72np11";
-    "osx-x64" = "1msnss8p3xfxq3pf0g9p8xjb72vilkfiix7h3fl48wzqdynigqg2";
-  }."${arch}";
+  languageServer = callPackage ./python-language-server.nix {};
 
-  # version is languageServerVersion in the package.json
-  languageServer = extractNuGet rec {
-    name = "Python-Language-Server";
-    version = "0.3.43";
-
-    src = fetchurl {
-      url = "https://pvsc.azureedge.net/python-language-server-stable/${name}-${arch}.${version}.nupkg";
-      sha256 = languageServerSha256;
-    };
-  };
 in vscode-utils.buildVscodeMarketplaceExtension {
   mktplcRef = {
     name = "python";
@@ -67,10 +54,12 @@ in vscode-utils.buildVscodeMarketplaceExtension {
   '';
 
   postInstall = ''
-    mkdir -p "$out/$installPrefix/languageServer.${languageServer.version}"
-    cp -R --no-preserve=ownership ${languageServer}/* "$out/$installPrefix/languageServer.${languageServer.version}"
-    chmod -R +wx "$out/$installPrefix/languageServer.${languageServer.version}"
+    mkdir -p "$out/$installPrefix/languageServer/"
+    cp -R --no-preserve=ownership ${languageServer}/* "$out/$installPrefix/languageServer/"
+    chmod -R +wx "$out/$installPrefix/languageServer"
   '';
+
+  passthru.python-language-server = languageServer;
 
   meta = with lib; {
     license = licenses.mit;

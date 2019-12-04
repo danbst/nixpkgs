@@ -243,7 +243,7 @@ rec {
           nrOptions = count (m: isOption m.options) decls;
         in
           if nrOptions == length decls then
-            let opt = fixupOptionType loc (mergeOptionDecls loc decls);
+            let opt = fixupOptionType loc (mergeOptionDecls loc decls defns');
             in evalOptionValue loc opt defns'
           else if nrOptions != 0 then
             let
@@ -267,7 +267,7 @@ rec {
 
      'opts' is a list of modules.  Each module has an options attribute which
      correspond to the definition of 'loc' in 'opt.file'. */
-  mergeOptionDecls = loc: opts:
+  mergeOptionDecls = loc: opts: defns:
     foldl' (res: opt:
       let t  = res.type;
           t' = opt.options.type;
@@ -298,7 +298,7 @@ rec {
             else packSubmodule file { options = opt; };
           getSubModules = opt.options.type.getSubModules or null;
           submodules =
-            if getSubModules != null then map (packSubmodule opt._file) getSubModules ++ res.options
+            if getSubModules != null then map (packSubmodule opt._file) (getSubModules defns) ++ res.options
             else if opt.options ? options then map (coerceOption opt._file) options' ++ res.options
             else res.options;
         in opt.options // res //

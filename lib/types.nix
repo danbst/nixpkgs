@@ -394,7 +394,7 @@ rec {
             # It shouldn't cause an issue since this is cosmetic for the manual.
             args.name = "‹name›";
           }).options;
-        getSubModules = opts';
+        getSubModules = _: opts';
         substSubModules = m: submodule m;
         functor = (defaultFunctor name) // {
           # Merging of submodules is done as part of mergeOptionDecls, as we have to annotate

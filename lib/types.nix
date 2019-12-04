@@ -358,25 +358,40 @@ rec {
     };
 
     # A submodule (like typed attribute set). See NixOS manual.
-    submodule = opts:
+    submodule = modules: fullSubmodule {
+      configDefault = true;
+      modules = toList modules;
+    };
+
+    fullSubmodule =
+      { configDefault ? false
+      , modules ? []
+      , specialArgs ? {}
+      }@attrs:
       let
-        opts' = toList opts;
         inherit (lib.modules) evalModules;
+
+        coerce = unify: value: if isFunction value
+          then setFunctionArgs (args: unify (value args)) (functionArgs value)
+          else unify (if configDefault then { config = value; } else value);
+
+        allModules = defs: modules ++ imap1 (n: { value, file }:
+          coerce (lib.modules.unifyModuleSyntax file "${toString file}-${toString n}") value
+        ) defs;
+
       in
       mkOptionType rec {
         name = "submodule";
         check = x: isAttrs x || isFunction x;
         merge = loc: defs:
-          let
-            coerce = def: if isFunction def then def else { config = def; };
-            modules = opts' ++ map (def: { _file = def.file; imports = [(coerce def.value)]; }) defs;
-          in (evalModules {
-            inherit modules;
+          (evalModules {
+            modules = allModules defs;
+            inherit specialArgs;
             args.name = last loc;
             prefix = loc;
           }).config;
         getSubOptions = prefix: (evalModules
-          { modules = opts'; inherit prefix;
+          { inherit modules prefix specialArgs;
             # This is a work-around due to the fact that some sub-modules,
             # such as the one included in an attribute set, expects a "args"
             # attribute to be given to the sub-module. As the option
@@ -394,8 +409,13 @@ rec {
             # It shouldn't cause an issue since this is cosmetic for the manual.
             args.name = "‹name›";
           }).options;
-        getSubModules = _: opts';
-        substSubModules = m: submodule m;
+        getSubModules = if configDefault
+          # TODO: Figure out why this can't be also just modules
+          then _: modules
+          else allModules;
+        substSubModules = m: fullSubmodule (attrs // {
+          modules = m;
+        });
         functor = (defaultFunctor name) // {
           # Merging of submodules is done as part of mergeOptionDecls, as we have to annotate
           # each submodule with its location.

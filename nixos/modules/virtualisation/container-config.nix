@@ -3,6 +3,14 @@
 with lib;
 
 {
+  options.boot.isContainer = mkOption {
+    type = types.bool;
+    default = false;
+    description = ''
+      Whether this NixOS machine is a lightweight container running
+      in another NixOS system.
+    '';
+  };
 
   config = mkIf config.boot.isContainer {
 

@@ -14,6 +14,8 @@ with lib;
 
   config = mkIf config.boot.isContainer {
 
+    documentation.nixos.enable = false;
+
     # Disable some features that are not useful in a container.
     nix.optimise.automatic = mkDefault false; # the store is host managed
     services.udisks2.enable = mkDefault false;

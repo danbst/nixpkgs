@@ -127,7 +127,7 @@ let
   '';
 
 in {
-  inherit optionsNix;
+  inherit optionsNix optionsXML;
 
   optionsAsciiDoc = lib.concatStringsSep "\n" (lib.mapAttrsToList singleAsciiDoc optionsNix);
 

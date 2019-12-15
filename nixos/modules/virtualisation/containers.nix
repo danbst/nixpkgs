@@ -634,6 +634,7 @@ in
     in mkOption {
       type = types.attrsOf (types.fullSubmodule {
         modules = [ containerDefaults containerParamsModule ] ++ baseModules;
+        optionsModules = [ containerParamsModule ];
         specialArgs.modulesPath = builtins.toString ../.;
       });
       default = {};

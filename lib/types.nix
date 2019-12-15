@@ -367,6 +367,7 @@ rec {
       { configDefault ? false
       , modules ? []
       , specialArgs ? {}
+      , hideSubOptions ? false
       }@attrs:
       let
         inherit (lib.modules) evalModules;
@@ -390,7 +391,7 @@ rec {
             args.name = last loc;
             prefix = loc;
           }).config;
-        getSubOptions = prefix: (evalModules
+        getSubOptions = prefix: optionalAttrs (!hideSubOptions) (evalModules
           { inherit modules prefix specialArgs;
             # This is a work-around due to the fact that some sub-modules,
             # such as the one included in an attribute set, expects a "args"
